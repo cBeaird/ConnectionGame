@@ -18,8 +18,8 @@ public interface Strategy {
     /**
      * This allows for different strategies to be played by different players
      *
-     * @param board game board being played
+     * @param game board being played
      * @return a move object
      */
-    PlayerMove getNextMove(Board board);
+    PlayerMove getNextMove(Game game);
 }

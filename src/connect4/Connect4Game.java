@@ -53,7 +53,7 @@ public class Connect4Game extends Game {
             Connect4Board b = (Connect4Board) this.getGameBoard();
             GamePieces p = (GamePieces) this.players.get(0).getMover(this.moveNumber() % 2);
             Strategy s = p.getPlayerStrategy();
-            PlayerMove m = s.getNextMove(b);
+            PlayerMove m = s.getNextMove(this);
             b.setBoardSpace(m.getYCoordinate(), m.getXCoordinate(), p);
 
             System.out.println(String.format("Move number %d player %c", this.queryMove(), p.visualization()));

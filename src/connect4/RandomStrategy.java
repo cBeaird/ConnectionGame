@@ -1,6 +1,6 @@
 package connect4;
 
-import connectionAPI.Board;
+import connectionAPI.Game;
 import connectionAPI.PlayerMove;
 import connectionAPI.Strategy;
 
@@ -25,11 +25,12 @@ public class RandomStrategy implements Strategy {
     }
 
     /**
-     * @param board game board being played
+     * @param game board being played
      * @return choose a random move from the current boards legal moves
      */
     @Override
-    public PlayerMove getNextMove(Board board) {
-        return (PlayerMove) board.getLegalMoves().values().toArray()[new Random().nextInt(board.getLegalMoves().size())];
+    public PlayerMove getNextMove(Game game) {
+        return (PlayerMove) game.getGameBoard().getLegalMoves().values().toArray()[
+                new Random().nextInt(game.getGameBoard().getLegalMoves().size())];
     }
 }

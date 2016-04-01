@@ -1,6 +1,6 @@
 package connect4;
 
-import connectionAPI.Board;
+import connectionAPI.Game;
 import connectionAPI.GameBoard;
 import connectionAPI.PlayerMove;
 import connectionAPI.Strategy;
@@ -33,11 +33,11 @@ public class InteractiveStrategy implements Strategy {
      * The interactive strategy will ask the user to input their move from the given board
      * the move is entered by the tuple (hy, wx)
      *
-     * @param board game board being played
+     * @param game board being played
      * @return the move that will be played
      */
     @Override
-    public PlayerMove getNextMove(Board board) {
+    public PlayerMove getNextMove(Game game) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int row, col;
         System.out.println();
@@ -70,7 +70,7 @@ public class InteractiveStrategy implements Strategy {
                 }
 
                 Connect4Move m = new Connect4Move(row, col);
-                if (!board.getLegalMoves().containsKey(m.hashCode())) {
+                if (!game.getGameBoard().getLegalMoves().containsKey(m.hashCode())) {
                     System.err.println("Illegal move please try again!");
                     continue;
                 }

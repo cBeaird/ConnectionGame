@@ -1,6 +1,9 @@
 package connect4;
 
-import connectionAPI.*;
+import connectionAPI.Board;
+import connectionAPI.GameBoard;
+import connectionAPI.Player;
+import connectionAPI.PlayerMove;
 
 import java.util.HashMap;
 
@@ -46,7 +49,7 @@ public class Connect4Board extends GameBoard {
             for (int l = 0; l < boardWidth() * (widthCoordinatePlane + 3) + 1; l++)
                 System.out.print('-');
             System.out.println();
-            System.out.print(String.format("%s%d", HEIGHT_CORDINATE, i) + String.format("%" + (heightCoordinatePlane - Integer.toString(i).length() - 1) + "s", " "));
+            System.out.print(String.format("%s%d", HEIGHT_COORDINATE, i) + String.format("%" + (heightCoordinatePlane - Integer.toString(i).length() - 1) + "s", " "));
             for (int j = 0; j < boardWidth(); j++) {
                 System.out.print(String.format("|%c", getBoardSpace(i, j).visualization()) + String.format("%" + (widthCoordinatePlane + 1) + "s", " "));
             }
@@ -60,7 +63,7 @@ public class Connect4Board extends GameBoard {
 
         System.out.print(String.format("%" + (heightCoordinatePlane + 1) + "s", " "));
         for (int l = 0; l < boardWidth(); l++) {
-            System.out.print(String.format("|%s%d ", WIDTH_CORDINATE, l) + String.format("%" + (widthCoordinatePlane - Integer.toString(l).length()) + "s", " "));
+            System.out.print(String.format("|%s%d ", WIDTH_COORDINATE, l) + String.format("%" + (widthCoordinatePlane - Integer.toString(l).length()) + "s", " "));
         }
         System.out.print("|\n");
     }

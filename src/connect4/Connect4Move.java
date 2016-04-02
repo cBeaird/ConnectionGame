@@ -57,7 +57,7 @@ public class Connect4Move implements PlayerMove {
     }
 
     /**
-     * @param player sets player occupying the board space idetified by the move
+     * @param player sets player occupying the board space identified by the move
      */
     @Override
     public void setOwner(Player player) {

@@ -12,9 +12,9 @@ import connect4.GamePieces;
  */
 
 public abstract class GameBoard implements Board, WinRules {
-    public static final String HEIGHT_CORDINATE = "H";
-    public static final String WIDTH_CORDINATE = "W";
-    public static final String DEPTH_CORDINATE = "D";
+    public static final String HEIGHT_COORDINATE = "H";
+    public static final String WIDTH_COORDINATE = "W";
+    public static final String DEPTH_COORDINATE = "D";
     protected int boardHeight;
     protected int boardWidth;
     protected int boardDepth;
@@ -56,6 +56,14 @@ public abstract class GameBoard implements Board, WinRules {
     }
 
     /**
+     * @return the connection length required to win
+     */
+    @Override
+    public int getConnectionLength() {
+        return this.winningConnectionLength;
+    }
+
+    /**
      * number of connected game pieces that are needed to win the game. the connection length must not be larger than
      * any dimension of the game board or there can be no winner in that dimension.
      *
@@ -68,14 +76,6 @@ public abstract class GameBoard implements Board, WinRules {
                             "connection of length %d is not achievable",
                     boardHeight(), boardWidth(), length));
         this.winningConnectionLength = length;
-    }
-
-    /**
-     * @return the connection length required to win
-     */
-    @Override
-    public int getConnectionLength() {
-        return this.winningConnectionLength;
     }
 
     public int hashCode() {

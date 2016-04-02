@@ -53,10 +53,10 @@ public class InteractiveStrategy implements Strategy {
                     continue;
                 }
 
-                if (move[0].startsWith(GameBoard.HEIGHT_CORDINATE)) {
+                if (move[0].startsWith(GameBoard.HEIGHT_COORDINATE)) {
                     row = Integer.parseInt(move[0].substring(1));
                     col = Integer.parseInt(move[1].substring(1));
-                } else if (move[0].startsWith(GameBoard.WIDTH_CORDINATE)) {
+                } else if (move[0].startsWith(GameBoard.WIDTH_COORDINATE)) {
                     row = Integer.parseInt(move[1].substring(1));
                     col = Integer.parseInt(move[0].substring(1));
                 } else {

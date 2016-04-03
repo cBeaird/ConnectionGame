@@ -185,7 +185,7 @@ public class Connect4Board extends GameBoard {
                 }
 
                 // Check for the up left vector winner
-                if ((i + getConnectionLength() - 1 < boardHeight()) && (j - getConnectionLength() - 1) >= 0) {
+                if ((i + (getConnectionLength() - 1) < boardHeight()) && (j - (getConnectionLength() - 1)) >= 0) {
                     for (int ul = 1; ul < getConnectionLength(); ul++) {
                         if (playingBoard[i][j] != playingBoard[i + ul][j + (-1 * ul)])
                             break;

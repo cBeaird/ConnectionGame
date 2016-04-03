@@ -34,7 +34,7 @@ public class SmarterRandomStrategy implements Strategy {
 
         // Check to see if i can win on the next move (queryMove-1) because the move has
         // already been played in the game the result of the move has not been determined
-        p = canWin((Connect4Game) hypotheticalGame.copy(), hypotheticalGame.getPlayers().get(0).getMover(hypotheticalGame.queryMove() - 1 % hypotheticalGame.getPlayers().size()));
+        p = canWin((Connect4Game) hypotheticalGame.copy(), hypotheticalGame.getPlayers().get(0).getMover((hypotheticalGame.queryMove() - 1) % hypotheticalGame.getPlayers().size()));
         if (p != null)
             return p;
 

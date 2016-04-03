@@ -13,9 +13,9 @@ import connectionAPI.Strategy;
  */
 
 public enum GamePieces implements Player {
-    EMPTY(' ', -1, 2),
+    EMPTY(' ', -1, 317),
     WHITE('X', 0, 7417),
-    BLACK('O', 1, 7573);
+    BLACK('O', 1, 15383);
 
     private final char displayChar;
     private final int moveOnTurn;
@@ -60,19 +60,19 @@ public enum GamePieces implements Player {
     }
 
     /**
-     * @param playerStrategy reference to the players strategy
-     */
-    @Override
-    public void setPlayerStrategy(Strategy playerStrategy) {
-        this.strategy = playerStrategy;
-    }
-
-    /**
      * @return strategy played by the player
      */
     @Override
     public Strategy getPlayerStrategy() {
         return strategy;
+    }
+
+    /**
+     * @param playerStrategy reference to the players strategy
+     */
+    @Override
+    public void setPlayerStrategy(Strategy playerStrategy) {
+        this.strategy = playerStrategy;
     }
 
     /**

@@ -34,9 +34,9 @@ public class Connect4Test2 {
 
         // build a new game with players
         c4g = new Connect4Game(6, 7, players);
-        ((Connect4Board) c4g.getGameBoard()).setConnectionLength(2);
+        ((Connect4Board) c4g.getGameBoard()).setConnectionLength(4);
         c4g.play();
-
+        System.out.println(((Connect4Board) c4g.getGameBoard()).getWinner());
         System.exit(0);
     }
 }

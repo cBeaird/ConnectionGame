@@ -207,7 +207,7 @@ public class Connect4Board extends GameBoard {
      */
     @Override
     public boolean isDraw() {
-        return isFinished(boardHeight() * boardWidth()) && getWinner() == GamePieces.EMPTY;
+        return (getLegalMoves().isEmpty() && getWinner() == GamePieces.EMPTY);
     }
 
     /**

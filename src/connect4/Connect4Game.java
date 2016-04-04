@@ -69,4 +69,29 @@ public class Connect4Game extends Game {
         copiedGame.setMoveNumber(this.queryMove());
         return copiedGame;
     }
+
+    public void playSilent() {
+        while (true) {
+            // Check to see if the game is finished
+            if (((Connect4Board) getGameBoard()).isFinished(this.queryMove())) {
+                if (((Connect4Board) getGameBoard()).getWinner() != GamePieces.EMPTY) {
+                    break;
+                } else {
+                    break;
+                }
+            }
+
+            // Check to see if there is a winner
+            if (((Connect4Board) getGameBoard()).getWinner() != GamePieces.EMPTY) {
+                break;
+            }
+
+            Connect4Board b = (Connect4Board) this.getGameBoard();
+            GamePieces p = (GamePieces) this.players.get(0).getMover(this.moveNumber() % 2);
+            Strategy s = p.getPlayerStrategy();
+            PlayerMove m = s.getNextMove(this);
+            b.setBoardSpace(m.getYCoordinate(), m.getXCoordinate(), p);
+
+        }
+    }
 }

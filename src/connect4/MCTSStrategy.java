@@ -4,7 +4,6 @@ import connectionAPI.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Random;
 
 /**
  * @author Casey Beaird
@@ -16,7 +15,7 @@ import java.util.Random;
  */
 
 public class MCTSStrategy implements Strategy {
-    public static final String name = "Smarter random Strategy";
+    public static final String name = "Monte Carlo Tree Search pure random";
     private final int playDuration;
 
     public MCTSStrategy(int playClock) {
@@ -62,12 +61,10 @@ public class MCTSStrategy implements Strategy {
             }
         }
 
-
         // There is no easy move so we need to find the best move with in the time limit
         HashMap<Integer, Hashtable<String, Object>> playedBoards = new HashMap<>();
 
         while (System.currentTimeMillis() < stop) {
-            System.out.println("Running sims");
             Connect4Board playedBoard = (Connect4Board) playARandomGameFromThisState(hypotheticalGame.copy());
             if (playedBoard.getWinner() != GamePieces.EMPTY) {
                 Player winner = playedBoard.getWinner();
@@ -82,13 +79,13 @@ public class MCTSStrategy implements Strategy {
                                     playedBoards.get(m.hashCode()).put("visitCount", 0);
                                     playedBoards.get(m.hashCode()).put("winCount", 0);
                                 }
-                            }
-                            Hashtable<String, Object> h = playedBoards.get(m.hashCode());
-                            h.put("visitCount", (Integer) h.get("visitCount") + 1);
-                            if (winner == thisPlayer) {
-                                h.put("winCount", (Integer) h.get("winCount") + 1);
-                            } else {
-                                h.put("winCount", (Integer) h.get("winCount") - 1);
+                                Hashtable<String, Object> h = playedBoards.get(m.hashCode());
+                                h.put("visitCount", (Integer) h.get("visitCount") + 1);
+                                if (winner == thisPlayer) {
+                                    h.put("winCount", (Integer) h.get("winCount") + 1);
+                                } else {
+                                    h.put("winCount", (Integer) h.get("winCount") - 1);
+                                }
                             }
                         }
                     }
@@ -96,7 +93,20 @@ public class MCTSStrategy implements Strategy {
             }
         }
 
-        return (PlayerMove) hypotheticalGame.getGameBoard().getLegalMoves().values().toArray()[new Random().nextInt(hypotheticalGame.getGameBoard().getLegalMoves().size())];
+        PlayerMove bestMove = null;
+        int value = Integer.MIN_VALUE;
+        for (PlayerMove m : hypotheticalGame.getGameBoard().getLegalMoves().values()) {
+            m.setOwner(thisPlayer);
+            if (playedBoards.containsKey(m.hashCode())) {
+                Hashtable<String, Object> h = playedBoards.get(m.hashCode());
+                if ((Integer) h.get("winCount") >= value) {
+                    value = (Integer) h.get("winCount");
+                    bestMove = (PlayerMove) h.get("move");
+                }
+            }
+        }
+
+        return bestMove;
     }
 
     private PlayerMove canWin(Connect4Game game, Player p) {
@@ -115,13 +125,19 @@ public class MCTSStrategy implements Strategy {
     }
 
     private Board playARandomGameFromThisState(Game randomGame) {
+        HashMap<Integer, Strategy> originalStrategies = new HashMap<>();
         randomGame.setMoveNumber((randomGame.queryMove() - 1));
 
-        for (Player p : randomGame.getPlayers())
+        for (Player p : randomGame.getPlayers()) {
+            originalStrategies.put(p.turn(), p.getPlayerStrategy());
             p.setPlayerStrategy(new RandomStrategy());
+        }
 
         ((Connect4Game) randomGame).playSilent();
 
+        for (Player p : randomGame.getPlayers()) {
+            p.setPlayerStrategy(originalStrategies.get(p.turn()));
+        }
         return randomGame.getGameBoard();
     }
 }

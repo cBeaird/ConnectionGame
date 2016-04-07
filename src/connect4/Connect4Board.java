@@ -67,6 +67,35 @@ public class Connect4Board extends GameBoard {
         }
         System.out.print("|\n");
     }
+    
+    public void display(String indent) {
+        int heightCoordinatePlane = Integer.toString(boardHeight()).length() + 2;
+        int widthCoordinatePlane = Integer.toString(boardWidth()).length() + 1;
+
+        System.out.println();
+        for (int i = boardHeight() - 1; i > -1; i--) {
+            System.out.print(String.format(indent+"%" + (heightCoordinatePlane + 1) + "s", " "));
+            for (int l = 0; l < boardWidth() * (widthCoordinatePlane + 3) + 1; l++)
+                System.out.print('-');
+            System.out.println();
+            System.out.print(String.format(indent+"%s%d", HEIGHT_COORDINATE, i) + String.format("%" + (heightCoordinatePlane - Integer.toString(i).length() - 1) + "s", " "));
+            for (int j = 0; j < boardWidth(); j++) {
+                System.out.print(String.format("|%c", getBoardSpace(i, j).visualization()) + String.format("%" + (widthCoordinatePlane + 1) + "s", " "));
+            }
+            System.out.print(String.format("%" + (widthCoordinatePlane - Integer.toString(boardWidth()).length()) + "s", " ") + "|\n");
+        }
+
+        System.out.print(String.format(indent+"%" + (heightCoordinatePlane + 1) + "s", " "));
+        for (int l = 0; l < boardWidth() * (widthCoordinatePlane + 3) + 1; l++)
+            System.out.print('-');
+        System.out.println();
+
+        System.out.print(String.format(indent+"%" + (heightCoordinatePlane + 1) + "s", " "));
+        for (int l = 0; l < boardWidth(); l++) {
+            System.out.print(String.format("|%s%d ", WIDTH_COORDINATE, l) + String.format("%" + (widthCoordinatePlane - Integer.toString(l).length()) + "s", " "));
+        }
+        System.out.print("|\n");
+    }
 
     /**
      * @return deep copy of the board in its current configuration

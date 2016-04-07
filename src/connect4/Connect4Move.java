@@ -78,4 +78,11 @@ public class Connect4Move implements PlayerMove {
         return this.owner == null ? ((this.row * 947) + (this.column * 4391)) :
                 ((this.row * 947) + (this.column * 4391) + this.owner.getPlayerHashID());
     }
+
+	@Override
+	public String toString() {
+		return "H" + row + ", W" + column;
+	}
+    
+    
 }

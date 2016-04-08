@@ -2,13 +2,38 @@ package connect4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import connectionAPI.Game;
 import connectionAPI.Player;
 import connectionAPI.PlayerMove;
 import connectionAPI.Strategy;
 
+/**
+ * @author Casey Beaird
+ * @author Chris Everitt Created on 3/20/16. Virginia Commonwealth University
+ *         Computer Science Department Course 612 Game Theory
+ * 
+ *         Implements a naive Tree Search strategy.
+ * 
+ */
+
 public class TreeSearchStrategy implements Strategy {
+
+	private Integer maxDepth;
+
+	/**
+	 * 
+	 * Create a new TreeSearchStrategy that will search to {@code maxDepth}.
+	 * 
+	 * @param maxDepth
+	 *            the maximum relative depth to search, ie the number of turns
+	 *            to play out. Set this to Integer.MAX-VALUE for a full tree
+	 *            search.
+	 */
+	public TreeSearchStrategy(Integer maxDepth) {
+		this.maxDepth = maxDepth;
+	}
 
 	@Override
 	public String getStrategyName() {
@@ -17,261 +42,95 @@ public class TreeSearchStrategy implements Strategy {
 
 	@Override
 	public PlayerMove getNextMove(Game game) {
+
+		Random rnd = new Random();
+
+		Tree tree = new Tree((Connect4Game) game, maxDepth);
+		
+		for (Tree child : tree.getChildren()) {
+			System.out.println(child.getMove() + ": " + child.minimax());
+		}
+
+		List<PlayerMove> moves = getWinningMoves(tree);
+		System.out.println("winners: " + moves);
+		if (!moves.isEmpty()) {
+			return moves.get(rnd.nextInt(moves.size()));
+		}
+
+		System.out.println("besters: " + moves);
+		moves = getBestMoves(tree);
+
+		return moves.get(rnd.nextInt(moves.size()));
+
+	}
+
+	/**
+	 * get the moves that maximize this player's utility.
+	 * 
+	 * @return The moves that maximize a players utility
+	 */
+	private List<PlayerMove> getBestMoves(Tree tree) {
+		//TODO: this ought to use minimax instead of cumulativeUtility
+		List<PlayerMove> list = new ArrayList<>();
+		Double maxUtl = Double.MAX_VALUE * -1;
+		for (Tree child : tree.getChildren()) {
+			Connect4Game game = (Connect4Game) child.getGame();
+			PlayerMove move = child.getMove();
+			Connect4Board board = (Connect4Board) child.getGame().getGameBoard().copy();
+			board.setBoardSpace(move.getYCoordinate(), move.getXCoordinate(), (GamePieces) tree.rootPlayer());
+			if (!opponentWinsAfterMove(move, game)) {
+				if (child.cumulativeUtility() > maxUtl) {
+					list.clear();
+					list.add(move);
+				} else if (child.cumulativeUtility() == maxUtl) {
+					list.add(move);
+				}
+			}
+		}
+		if (list.isEmpty()) {
+			throw new AssertionError("There are no legal moves to play.");
+		}
+		return list;
+	}
+
+	/**
+	 * 
+	 * Check this move to see if it will allow the opponent to win on their next
+	 * turn.
+	 * 
+	 * @return true if this move will create a winning move for the opponent on
+	 *         the next turn, false otherwise.
+	 */
+	private boolean opponentWinsAfterMove(PlayerMove move, Connect4Game game) {
 		Player thisPlayer = game.getPlayers().get(0).getMover((game.queryMove() - 1) % game.getPlayers().size());
-
-		Connect4Board c4board = (Connect4Board) game.getGameBoard();
-
-		List<PlayerMove> moves = new ArrayList<>(c4board.getLegalMoves().values());
-
-		Tree tree = new Tree((Connect4Game) game, 4);
-		tree.display("");
-		
-		System.out.println("rootPlayer is " + tree.rootPlayer());
-		
-		for(Tree c: tree.getChildren()){
-			System.out.println(c.getMove() + ": " +c.cumulativeUtility(thisPlayer));
-		}
-		
-		for(Tree c: tree.getChildren()){
-			System.out.println(c.getMove() + ": " +c.minimax());
-		}
-		
-		return null;
-	}
-
-	public static void main(String[] args) {
-		Connect4Game c4g;
-		ArrayList<Player> players = new ArrayList<>();
-
-		for (Player p : GamePieces.values()) {
-			if (p == GamePieces.EMPTY)
-				continue;
-			if (p.turn() == 1)
-				p.setPlayerStrategy(new InteractiveStrategy());
-			if (p.turn() == 0)
-				p.setPlayerStrategy(new TreeSearchStrategy());
-			players.add(p);
-		}
-
-		// build a new game with players
-		c4g = new Connect4Game(3, 4, players);
-		
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(0, 0, GamePieces.WHITE);
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(0, 1, GamePieces.WHITE);
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(1, 0, GamePieces.WHITE);
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(0, 2, GamePieces.BLACK);
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(0, 3, GamePieces.BLACK);
-		((Connect4Board) c4g.getGameBoard()).setBoardSpace(1, 2, GamePieces.BLACK);
-		((Connect4Board) c4g.getGameBoard()).setConnectionLength(3);
-		c4g.play();
-		System.out.println(((Connect4Board) c4g.getGameBoard()).getWinner());
-		System.exit(0);
-	}
-}
-
-class Tree {
-
-	private Tree parent;
-	private Connect4Game game;
-	private List<Tree> children;
-	private Player player;
-	private PlayerMove move;
-	private Double utility;
-	private Integer depth;
-	private Integer maxDepth;
-
-	public Tree(Connect4Game game, Tree parent, Integer maxDepth) {
-		this.game = game;
-		this.parent = parent;
-		this.children = new ArrayList<>();
-		this.utility = 0.0d;
-		this.maxDepth = maxDepth;
-		this.player = game.getPlayers().get(0)
-				.getMover((game.queryMove() - 1) % game.getPlayers().size());
-		if(parent == null){
-			depth = 0;
-		} else {
-			this.depth = parent.getDepth() + 1;
-		}
-		build();
-	}
-	
-	public Tree(Connect4Game game, Tree parent){
-		this(game, parent, Integer.MAX_VALUE);
-	}
-
-	public Tree(Connect4Game game) {
-		this(game, (Tree) null, Integer.MAX_VALUE);
-	}
-	
-	public Tree(Connect4Game game, Integer maxDepth) {
-		this(game, (Tree) null, maxDepth);
-	}
-
-	private void build() {
-		Connect4Board board = (Connect4Board) game.getGameBoard();
-		System.out.println("getDepth()="+ getDepth());
-		if(getDepth()==maxDepth){
-			System.out.println("max depth!");
-			setUtility(0.0d);
-			return;
-		}
-		
-		if(board.isWon()){
-			if( board.getWinner() == rootPlayer()){
-				setUtility(1.0d);
-			} else {
-				setUtility(-1.0d);
-			}
-			return;
-		} 	
-		if(board.isDraw()){
-			setUtility(0.0d);
-			return;
-		} 
-		
-		
-		List<PlayerMove> moves = new ArrayList<>(board.getLegalMoves().values());
-
-		for (PlayerMove move : moves) {
-			Connect4Game newGame = (Connect4Game) game.copy();
-			Connect4Board newC4Board = (Connect4Board) newGame.getGameBoard();
-			
-			if(parent!=null){
-				newGame.moveNumber();
-			}
-			
-		
-			
-			Player newPlayer = newGame.getPlayers().get(0)
-					.getMover((newGame.queryMove() - 1) % newGame.getPlayers().size());
-			newC4Board.setBoardSpace(move.getYCoordinate(), move.getXCoordinate(), (GamePieces) newPlayer);
-			
-			
-
-			
-			
-			Tree child = new Tree(newGame, this, maxDepth);
-			child.setMove(move);
-			children.add(child);
-		}
-
-	}
-
-	public Player rootPlayer(){
-		if(parent == null){
-			return player;
-		} else {
-			return getParent().rootPlayer();
-		}
-	}
-	
-	public Double minimax(){
-			
-		if(getChildren().isEmpty()){
-			return cumulativeUtility(rootPlayer());
-		}
-		
-		Double sum = null;
-		if(player == rootPlayer()){
-			sum = Double.MAX_VALUE;
-			for(Tree child: getChildren()){
-				sum = Math.min(sum, child.minimax());
-			}
-		} else {
-			sum = Double.MAX_VALUE * -1.0;
-			for(Tree child: getChildren()){
-				sum = Math.max(sum, child.minimax());
+		Player nextPlayer = game.getPlayers().get(0).getMover((game.queryMove() - 0) % game.getPlayers().size());
+		for (PlayerMove nextMoves : game.getGameBoard().getLegalMoves().values()) {
+			Connect4Board nextBoard = (Connect4Board) game.copy().getGameBoard();
+			nextBoard.setBoardSpace(nextMoves.getYCoordinate(), nextMoves.getXCoordinate(), (GamePieces) nextPlayer);
+			if (nextBoard.getWinner().equals(nextPlayer)) {
+				return true;
 			}
 		}
-		return sum;
-	}
-	
-	public Player getPlayer() {
-		return player;
+		return false;
 	}
 
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
-
-	public PlayerMove getMove() {
-		return move;
-	}
-
-	public void setMove(PlayerMove move) {
-		this.move = move;
-	}
-
-	public Double getUtility() {
-		return utility;
-	}
-	
-	public Double cumulativeUtility(Player player) {
-		Double sum = utility;
-		for(Tree child: getChildren()){
-			sum+=child.cumulativeUtility(this.player);
+	/**
+	 * Get all the winning moves.
+	 * 
+	 * @return the list of moves that would cause our player to win, or an empty
+	 *         list if there are no winning moves.
+	 */
+	private List<PlayerMove> getWinningMoves(Tree tree) {
+		List<PlayerMove> list = new ArrayList<>();
+		for (Tree child : tree.getChildren()) {
+			PlayerMove move = child.getMove();
+			Connect4Board board = (Connect4Board) child.getGame().getGameBoard().copy();
+			board.setBoardSpace(move.getYCoordinate(), move.getXCoordinate(), (GamePieces) tree.rootPlayer());
+			if (board.getWinner().equals(tree.rootPlayer())) {
+				list.add(move);
+			}
 		}
-		return sum;
-	}
-	
-	public void setUtility(Double utility) {
-		this.utility = utility;
+		return list;
 	}
 
-	public Tree getParent() {
-		return parent;
-	}
-
-	public void setParent(Tree parent) {
-		this.parent = parent;
-	}
-
-	public Connect4Game getGame() {
-		return game;
-	}
-
-	public void setGame(Connect4Game game) {
-		this.game = game;
-	}
-
-	public List<Tree> getChildren() {
-		return children;
-	}
-
-	public void setChildren(List<Tree> children) {
-		this.children = children;
-	}
-
-	public void addChild(Tree child) {
-		child.setParent(this);
-		children.add(child);
-	}
-	
-	public Integer getDepth() {
-		return depth;
-	}
-
-	public void display(String indent) {
-		System.out.println();
-		if(parent == null){
-			System.out.println("Root of tree, player " + player + "'s turn");
-		} else {
-			System.out.println(indent + player + " moves to " + move + " for utility of " + cumulativeUtility(rootPlayer()) + ". depth is " + getDepth() + ". minimax is " + minimax());
-		}
-		Connect4Board board = (Connect4Board) game.getGameBoard();
-		board.display(indent);
-		for (Tree tree : children) {
-			tree.display("    " + indent);
-		}
-
-	}
-}
-
-
-
-class TerminalNodeEvaluator {
-	public double evaluate(Tree terminal){
-		return 0;
-	}
 }

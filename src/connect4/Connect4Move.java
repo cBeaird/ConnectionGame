@@ -79,10 +79,11 @@ public class Connect4Move implements PlayerMove {
                 ((this.row * 947) + (this.column * 4391) + this.owner.getPlayerHashID());
     }
 
-	@Override
-	public String toString() {
-		return "H" + row + ", W" + column;
-	}
-    
-    
+    /**
+     * @return string in coordinate format
+     */
+    @Override
+    public String toString() {
+        return String.format("H%d, W%d", getYCoordinate(), getXCoordinate());
+    }
 }

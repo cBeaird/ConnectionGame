@@ -1,9 +1,6 @@
 package connect4;
 
-import connectionAPI.Game;
-import connectionAPI.Player;
-import connectionAPI.PlayerMove;
-import connectionAPI.Strategy;
+import connectionAPI.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,13 +58,13 @@ public class MCTS_UCTStrategy implements Strategy {
      */
     @Override
     public PlayerMove getNextMove(Game game) {
-        long stop = System.currentTimeMillis() + this.playDuration;
+        long stop = System.currentTimeMillis() + getPlayDuration();
         Connect4Game hypotheticalGame = (Connect4Game) game.copy();
         PlayerMove p;
-//        Player thisPlayer;
-//
-//        // We need to know who is playing
-//        thisPlayer = hypotheticalGame.getPlayers().get(0).getMover((hypotheticalGame.queryMove() - 1) % hypotheticalGame.getPlayers().size());
+        Player thisPlayer;
+
+        // We need to know who is playing
+        thisPlayer = hypotheticalGame.getPlayers().get(0).getMover((hypotheticalGame.queryMove() - 1) % hypotheticalGame.getPlayers().size());
 
         // Check to see if i can win on the next move (queryMove-1) because the move has
         // already been played in the game the result of the move has not been determined
@@ -91,10 +88,37 @@ public class MCTS_UCTStrategy implements Strategy {
         root.put("winCount", 0);
         gameTree.put(hypotheticalGame.hashCode(), root);
 
-        int selectedNode = selection(gameTree, root);
-        int expandedLeaf = expandTree(gameTree, selectedNode);
-        Player winner = runSimulationFromLeaf(gameTree, expandedLeaf);
-        return null;
+        while (System.currentTimeMillis() < stop) {
+            try {
+                int selectedNode = selection(gameTree, root);
+                int expandedLeaf = expandTree(gameTree, selectedNode);
+                Player winner = runSimulationFromLeaf(gameTree, expandedLeaf);
+                backPropagate(gameTree, expandedLeaf, winner, hypotheticalGame.getPlayers().get(0).getMover((hypotheticalGame.queryMove() - 1) % hypotheticalGame.getPlayers().size()));
+            } catch (NullPointerException | ConnectionGameException e) {
+//                System.out.println(String.format("selected node: %d", selectedNode));
+                // Cannot expand the tree from this point to select a different node
+            }
+        }
+
+        PlayerMove bestMove = null;
+        int bestValue = Integer.MIN_VALUE;
+        for (PlayerMove m : hypotheticalGame.getGameBoard().getLegalMoves().values()) {
+            m.setOwner(thisPlayer);
+            Connect4Game checkGame = (Connect4Game) hypotheticalGame.copy();
+            checkGame.moveNumber();
+            ((Connect4Board) checkGame.getGameBoard()).setBoardSpace(m.getYCoordinate(), m.getXCoordinate(), (GamePieces) m.getOwner());
+            if (gameTree.containsKey(checkGame.hashCode())) {
+                Hashtable<String, Object> h = gameTree.get(checkGame.hashCode());
+                if ((int) h.get("winCount") > bestValue) {
+                    bestMove = m;
+                    bestValue = (int) h.get("winCount");
+                }
+            } else {
+                System.out.println("this move is not in the game tree");
+            }
+        }
+        System.out.println(String.format("%d games played", gameTree.size()));
+        return bestMove;
     }
 
     private int selection(HashMap<Integer, Hashtable<String, Object>> gameTree, Hashtable<String, Object> parent) {
@@ -108,6 +132,7 @@ public class MCTS_UCTStrategy implements Strategy {
             Player p = g.getPlayers().get(0).getMover((g.queryMove() - 1) % g.getPlayers().size());
 
             ((Connect4Board) g.getGameBoard()).setBoardSpace(m.getYCoordinate(), m.getXCoordinate(), (GamePieces) p);
+            g.moveNumber();
 
             if (gameTree.containsKey(g.hashCode()))
                 playedGames.add(g);
@@ -117,19 +142,21 @@ public class MCTS_UCTStrategy implements Strategy {
         if (!notPlayedGames.isEmpty())
             return thisGame.hashCode();
         else {
-            double bestValue = Double.MIN_VALUE;
+            double bestValue = -Double.MAX_VALUE;
             int bestGameHash = 0;
 
             for (Connect4Game g : playedGames) {
                 Hashtable<String, Object> h = gameTree.get(g.hashCode());
-                double visits = (double) h.get("visitCount");
-                double wins = (double) h.get("winCount");
-
-                double value = (wins / visits) * UCT_CONSTANT * Math.sqrt(Math.log((double) parent.get("visitCount")) / visits);
+                double visits = (int) h.get("visitCount");
+                double wins = (int) h.get("winCount");
+                double value = (wins / visits) + MCTS_UCTStrategy.UCT_CONSTANT * Math.sqrt(((int) parent.get("visitCount")) / visits);
 
                 if (value > bestValue) {
                     bestValue = value;
                     bestGameHash = g.hashCode();
+                } else if (value == bestValue) {
+                    if (r.nextBoolean())
+                        bestGameHash = g.hashCode();
                 }
             }
 
@@ -157,8 +184,13 @@ public class MCTS_UCTStrategy implements Strategy {
                 notPlayedGames.add(g);
         }
 
+        if (notPlayedGames.size() < 1)
+            throw new ConnectionGameException("cannot expand tree form here");
+//            System.err.println(String.format("size: %d, tree size: %d", notPlayedGames.size(), gameTree.size()));
+
         // from the list of possible nodes not yet in the tree pick a random one
         Connect4Game selectedGame = (Connect4Game) notPlayedGames.toArray()[r.nextInt(notPlayedGames.size())];
+
         // play the move to keep this value consistent though out the game we want the hash to be correct
         selectedGame.moveNumber();
 
@@ -174,7 +206,37 @@ public class MCTS_UCTStrategy implements Strategy {
     }
 
     private Player runSimulationFromLeaf(HashMap<Integer, Hashtable<String, Object>> gameTree, int expandedLeaf) {
-        return null;
+        HashMap<Integer, Strategy> originalStrategies = new HashMap<>();
+        Connect4Game randomGameFromThisState = (Connect4Game) ((Connect4Game) gameTree.get(expandedLeaf).get("game")).copy();
+
+        randomGameFromThisState.setMoveNumber((randomGameFromThisState.queryMove() - 1));
+
+        for (Player p : randomGameFromThisState.getPlayers()) {
+            originalStrategies.put(p.turn(), p.getPlayerStrategy());
+            p.setPlayerStrategy(new RandomStrategy());
+        }
+
+        randomGameFromThisState.playSilent();
+
+        for (Player p : randomGameFromThisState.getPlayers()) {
+            p.setPlayerStrategy(originalStrategies.get(p.turn()));
+        }
+
+        return ((Connect4Board) randomGameFromThisState.getGameBoard()).getWinner();
+    }
+
+    private void backPropagate(HashMap<Integer, Hashtable<String, Object>> gameTree, int expandedLeaf, Player winner, Player mover) {
+        int nodeKey = expandedLeaf;
+        int incrementValue = winner == mover ? 1 : -1;
+
+        while (true) {
+            Hashtable<String, Object> gameStatistics = gameTree.get(nodeKey);
+            if ((int) gameStatistics.get("parent") == nodeKey)
+                break;
+
+            gameStatistics.put("winCount", (Integer) gameStatistics.get("winCount") + incrementValue);
+            nodeKey = (int) gameStatistics.get("parent");
+        }
     }
 
     private PlayerMove canWin(Connect4Game game, Player p) {
@@ -191,52 +253,4 @@ public class MCTS_UCTStrategy implements Strategy {
         }
         return null;
     }
-
-
-    //    private int makeSelection(HashMap<Integer, Hashtable<String, Object>> gameTree, Hashtable<String, Object> parent) {
-//
-//        Connect4Game aGame = (Connect4Game) parent.get("game");
-//        ArrayList<Connect4Game> playedGames = new ArrayList<>();
-//        ArrayList<Connect4Game> notPlayedGames = new ArrayList<>();
-//
-//        for (PlayerMove m : aGame.getGameBoard().getLegalMoves().values()){
-//            Connect4Game g = (Connect4Game) aGame.copy();
-//            Player p = g.getPlayers().get(0).getMover((g.queryMove()-1) % g.getPlayers().size());
-//
-//            ((Connect4Board)g.getGameBoard()).setBoardSpace(m.getYCoordinate(), m.getYCoordinate(), (GamePieces) p);
-//
-//            if (gameTree.containsKey(g.hashCode()))
-//                playedGames.add(g);
-//            else notPlayedGames.add(g);
-//        }
-//
-//        if (!notPlayedGames.isEmpty()){
-//            Connect4Game selectedGame = (Connect4Game) notPlayedGames.toArray()[r.nextInt(notPlayedGames.size())];
-//            Hashtable<String, Object> h = new Hashtable<>();
-//            h.put("parent", parent);
-//            h.put("game", selectedGame);
-//            h.put("visitCount", 1);
-//            h.put("winCount", 0);
-//            gameTree.put(selectedGame.hashCode(), h);
-//            return selectedGame.hashCode();
-//        } else{
-//            double bestValue = Double.MIN_VALUE;
-//            int bestGameHash = 0;
-//
-//            for (Connect4Game g : playedGames){
-//                Hashtable<String, Object> h = gameTree.get(g.hashCode());
-//                double visits = (double) h.get("visitCount");
-//                double wins = (double) h.get("winCount");
-//
-//                double value = (wins / visits) * UCT_CONSTANT * Math.sqrt(Math.log((double) parent.get("visitCount")) / visits);
-//
-//                if (value > bestValue) {
-//                    bestValue = value;
-//                    bestGameHash = g.hashCode();
-//                }
-//            }
-//
-//            return makeSelection(gameTree, gameTree.get(bestGameHash));
-//        }
-//    }
 }

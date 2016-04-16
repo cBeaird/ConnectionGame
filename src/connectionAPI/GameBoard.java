@@ -79,6 +79,6 @@ public abstract class GameBoard implements Board, WinRules {
     }
 
     public int hashCode() {
-        return ((29 * boardHeight()) + (31 * boardWidth()) + (37 * boardDepth()) + (41 * getConnectionLength()));
+        return ((149 * boardHeight()) + (977 * boardWidth()) + (1103 * boardDepth()) + (3067 * getConnectionLength()));
     }
 }

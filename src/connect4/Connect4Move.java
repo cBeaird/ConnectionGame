@@ -24,7 +24,7 @@ public class Connect4Move implements PlayerMove {
         this.row = row;
     }
 
-    public Connect4Move(int row, int column, GamePieces piece){
+    public Connect4Move(int row, int column, GamePieces piece) {
         this.column = column;
         this.row = row;
         this.owner = piece;
@@ -75,8 +75,14 @@ public class Connect4Move implements PlayerMove {
 
     @Override
     public int hashCode() {
-        return this.owner == null ? ((this.row * 947) + (this.column * 4391)) :
-                ((this.row * 947) + (this.column * 4391) + this.owner.getPlayerHashID());
+        int h;
+
+        if (this.owner == null)
+            h = (((this.row + 1) * 947) + ((this.column + 1) * 4391));
+        else
+            h = (((this.row + 1) * 947) + ((this.column + 1) * 4391)) * this.owner.getPlayerHashID();
+
+        return h;
     }
 
     /**

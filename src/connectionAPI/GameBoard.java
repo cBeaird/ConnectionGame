@@ -78,7 +78,30 @@ public abstract class GameBoard implements Board, WinRules {
         this.winningConnectionLength = length;
     }
 
+//    public int hashCode() {
+//        return ((149 * boardHeight()) + (977 * boardWidth()) + (1103 * boardDepth()) + (3067 * getConnectionLength()));
+//    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameBoard)) return false;
+
+        GameBoard gameBoard = (GameBoard) o;
+
+        if (boardHeight != gameBoard.boardHeight) return false;
+        if (boardWidth != gameBoard.boardWidth) return false;
+        if (boardDepth != gameBoard.boardDepth) return false;
+        return winningConnectionLength == gameBoard.winningConnectionLength;
+    }
+
+    @Override
     public int hashCode() {
-        return ((149 * boardHeight()) + (977 * boardWidth()) + (1103 * boardDepth()) + (3067 * getConnectionLength()));
+        int result = boardHeight;
+        result = 31 * result + boardWidth;
+        result = 31 * result + boardDepth;
+        result = 31 * result + winningConnectionLength;
+        return result;
     }
 }

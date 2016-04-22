@@ -72,6 +72,19 @@ public abstract class Game {
         return this.getGameBoard().hashCode() + (73 * this.queryMove());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Game)) return false;
+
+        Game game = (Game) o;
+
+        if (!getGameBoard().equals(game.getGameBoard())) return false;
+        if (!getPlayers().equals(game.getPlayers())) return false;
+        return moveNumber.equals(game.moveNumber);
+
+    }
+
     /**
      * Main Driver for playing a game
      */

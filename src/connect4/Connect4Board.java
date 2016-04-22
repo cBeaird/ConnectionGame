@@ -5,6 +5,7 @@ import connectionAPI.GameBoard;
 import connectionAPI.Player;
 import connectionAPI.PlayerMove;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -248,11 +249,29 @@ public class Connect4Board extends GameBoard {
         return ((boardHeight() * boardWidth())) <= movesPlayed;
     }
 
+//    public int hashCode() {
+//        int hash = super.hashCode();
+//        for (int i = 0; i < boardHeight(); i++)
+//            for (int j = 0; j < boardWidth(); j++)
+//                hash += getBoardSpaceAsMove(i, j).hashCode();
+//        return hash;
+//    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Connect4Board)) return false;
+
+        Connect4Board that = (Connect4Board) o;
+
+        return Arrays.deepEquals(playingBoard, that.playingBoard);
+
+    }
+
+    @Override
     public int hashCode() {
-        int hash = super.hashCode();
-        for (int i = 0; i < boardHeight(); i++)
-            for (int j = 0; j < boardWidth(); j++)
-                hash += getBoardSpaceAsMove(i, j).hashCode();
-        return hash;
+        int result = super.hashCode();
+        result = 31 * result + Arrays.deepHashCode(playingBoard);
+        return result;
     }
 }

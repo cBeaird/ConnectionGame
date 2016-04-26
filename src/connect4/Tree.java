@@ -21,7 +21,7 @@ class Tree {
 	private List<Tree> children;
 	private Player player;
 	private PlayerMove move;
-	private Double utility;
+	private Integer utility;
 	private Integer depth;
 	private Integer maxDepth;
 
@@ -41,7 +41,7 @@ class Tree {
 		this.game = game;
 		this.parent = parent;
 		this.children = new ArrayList<>();
-		this.utility = 0.0d;
+		this.utility = 0;
 		this.maxDepth = maxDepth;
 		this.player = game.getPlayers().get(0).getMover((game.queryMove() - 1) % game.getPlayers().size());
 		if (parent == null) {
@@ -58,16 +58,69 @@ class Tree {
 	}
 	
 	
+	private Integer runCountUtilityApproximation(Connect4Game game){
+		Connect4Board board = (Connect4Board) game.getGameBoard();
+		Integer runCount = 0;
+		for (int k = 1; k < board.getConnectionLength() - 1; k++){
+	        for (int i = 0; i < board.boardHeight(); i++) {
+	            for (int j = 0; j < board.boardWidth(); j++) {
+	                // Any winning connection cannot start with an empty space
+	                if (board.getBoardSpace(i, j) == GamePieces.EMPTY)
+	                    continue;
+
+	                // Check for a row winner
+	                if ((j + board.getConnectionLength() - 1) < board.boardWidth()) {
+	                    for (int c = 1; c < board.getConnectionLength(); c++) {
+	                        if (board.getBoardSpace(i, j) != board.getBoardSpace(i,j + c))
+	                            break;
+	                        if (c == k)
+	                        	runCount++;
+	                    }
+	                }
+
+	                // Check for a column winner
+	                if ((i + board.getConnectionLength() - 1) < board.boardHeight()) {
+	                    for (int c = 1; c < board.getConnectionLength(); c++) {
+	                        if (board.getBoardSpace(i, j) != board.getBoardSpace(i + c,j))
+	                            break;
+	                        if (c == k)
+	                        	runCount++;
+	                    }
+	                }
+
+	                // Check for the up right vector winner
+	                if ((i + board.getConnectionLength() - 1 < board.boardHeight()) && (j + board.getConnectionLength() - 1 < board.boardWidth())) {
+	                    for (int ur = 1; ur < board.getConnectionLength(); ur++) {
+	                        if (board.getBoardSpace(i, j) != board.getBoardSpace(i + ur,j + ur))
+	                            break;
+	                       if (ur == k)
+	                        	runCount++;
+	                    }
+	                }
+
+	                // Check for the up left vector winner
+	                if ((i + (board.getConnectionLength() - 1) < board.boardHeight()) && (j - (board.getConnectionLength() - 1)) >= 0) {
+	                    for (int ul = 1; ul < board.getConnectionLength(); ul++) {
+	                        if (board.getBoardSpace(i, j) != board.getBoardSpace(i + ul, j + (-1 * ul)))
+	                            break;
+	                      if (ul == k)
+	                        	runCount++;
+	                    }
+	                }
+	            }
+	        }
+		}
+        return  runCount;
+	}
 	
 	
-	public Double approximatedUtility() {
+	public Integer approximatedUtility() {
+		UtilityHeuristic hueristic =  new UtilityHeuristic(game);
 		Player thisPlayer = rootPlayer();
-		Connect4Game game = (Connect4Game) getGame().copy();
-		Tree tree = new Tree(game);
-		Player treePlayer = tree.rootPlayer();
-		Double utl = tree.cumulativeUtility();
-		if (thisPlayer != treePlayer) {
-			utl *= -1.0;
+		Player currentPlayer = game.getPlayers().get(0).getMover((game.queryMove() - 1) % game.getPlayers().size());
+		Integer utl = hueristic.getHueristicUtility();
+		if (thisPlayer != currentPlayer) {
+			utl *= -1;
 		}
 		return utl;
 	}
@@ -81,14 +134,14 @@ class Tree {
 
 		if (board.isWon()) {
 			if (board.getWinner() == rootPlayer()) {
-				setUtility(1.0d);
+				setUtility(1);
 			} else {
-				setUtility(-1.0d);
+				setUtility(-1);
 			}
 			return;
 		}
 		if (board.isDraw()) {
-			setUtility(0.0d);
+			setUtility(0);
 			return;
 		}
 
@@ -119,8 +172,8 @@ class Tree {
 	 * 
 	 * @return the sum of all the probabilities of this nodes and it's descendants.
 	 */
-	public Double cumulativeUtility() {
-		Double sum = utility;
+	public Integer cumulativeUtility() {
+		Integer sum = utility;
 		for (Tree child : getChildren()) {
 			sum += child.cumulativeUtility();
 		}
@@ -174,7 +227,7 @@ class Tree {
 		return player;
 	}
 
-	public Double getUtility() {
+	public Integer getUtility() {
 		return utility;
 	}
 
@@ -189,24 +242,24 @@ class Tree {
 	 * @see Tree#cumulativeUtility(), 
 	 * 
 	 */
-	public Double minimax() {
+	public Integer minimax() {
 
 		if (getChildren().isEmpty()) {
 			if (player == rootPlayer()) {
-				return cumulativeUtility() * -1;
-			} else {
 				return cumulativeUtility();
+			} else {
+				return cumulativeUtility() * -1;
 			}
 		}
 
-		Double sum = null;
+		Integer sum = null;
 		if (player == rootPlayer()) {
-			sum = Double.MAX_VALUE;
+			sum = Integer.MAX_VALUE;
 			for (Tree child : getChildren()) {
 				sum = Math.min(sum, child.minimax());
 			}
 		} else {
-			sum = Double.MAX_VALUE * -1.0;
+			sum = Integer.MIN_VALUE;
 			for (Tree child : getChildren()) {
 				sum = Math.max(sum, child.minimax());
 			}
@@ -246,7 +299,7 @@ class Tree {
 		this.player = player;
 	}
 
-	public void setUtility(Double utility) {
+	public void setUtility(Integer utility) {
 		this.utility = utility;
 	}
 }

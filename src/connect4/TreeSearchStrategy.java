@@ -37,7 +37,7 @@ public class TreeSearchStrategy implements Strategy {
 
 	@Override
 	public String getStrategyName() {
-		return this.getClass().getSimpleName();
+		return this.getClass().getSimpleName() + "("+maxDepth+")";
 	}
 
 	@Override
@@ -46,19 +46,20 @@ public class TreeSearchStrategy implements Strategy {
 		Random rnd = new Random();
 
 		Tree tree = new Tree((Connect4Game) game, maxDepth);
-		
-		for (Tree child : tree.getChildren()) {
-			System.out.println(child.getMove() + ": " + child.minimax());
-		}
+
+//		for (Tree child : tree.getChildren()) {
+//			System.out.println(child.getMove() + ": " + child.minimax());
+//		}
 
 		List<PlayerMove> moves = getWinningMoves(tree);
-		System.out.println("winners: " + moves);
+//		System.out.println("winners: " + moves);
 		if (!moves.isEmpty()) {
 			return moves.get(rnd.nextInt(moves.size()));
 		}
-
-		System.out.println("besters: " + moves);
+		
 		moves = getBestMoves(tree);
+//		System.out.println("besters: " + moves);
+		
 
 		return moves.get(rnd.nextInt(moves.size()));
 
@@ -70,25 +71,43 @@ public class TreeSearchStrategy implements Strategy {
 	 * @return The moves that maximize a players utility
 	 */
 	private List<PlayerMove> getBestMoves(Tree tree) {
-		//TODO: this ought to use minimax instead of cumulativeUtility
 		List<PlayerMove> list = new ArrayList<>();
-		Double maxUtl = Double.MAX_VALUE * -1;
+		Integer maxUtl = Integer.MIN_VALUE;
 		for (Tree child : tree.getChildren()) {
 			Connect4Game game = (Connect4Game) child.getGame();
 			PlayerMove move = child.getMove();
 			Connect4Board board = (Connect4Board) child.getGame().getGameBoard().copy();
 			board.setBoardSpace(move.getYCoordinate(), move.getXCoordinate(), (GamePieces) tree.rootPlayer());
 			if (!opponentWinsAfterMove(move, game)) {
-				if (child.cumulativeUtility() > maxUtl) {
+//				System.out.println("child.minimax() = "+child.minimax()+" == maxUtl="+maxUtl);
+//				System.out.println(child.minimax() == maxUtl);
+				if (child.minimax() > maxUtl) {
 					list.clear();
+//					System.out.println("Adding " + move + " for a new maxUtil of " + child.minimax());
 					list.add(move);
-				} else if (child.cumulativeUtility() == maxUtl) {
+					maxUtl = child.minimax();
+				} else if (child.minimax() == maxUtl) {
+//					System.out.println("Adding " + move + " for a maxUtil of " + child.minimax());
 					list.add(move);
 				}
 			}
 		}
-		if (list.isEmpty()) {
+		if (tree.getChildren().isEmpty()) {
 			throw new AssertionError("There are no legal moves to play.");
+		}
+		if (list.isEmpty()) {
+			// Our opponent will win in their next turn regardless of our move,
+			// so return all legal moves
+			maxUtl = Integer.MIN_VALUE;
+			for (Tree child : tree.getChildren()) {
+				PlayerMove move = child.getMove();
+				if (child.minimax() > maxUtl) {
+					list.clear();
+					list.add(move);
+				} else if (child.minimax() == maxUtl) {
+					list.add(move);
+				}
+			}
 		}
 		return list;
 	}
@@ -102,7 +121,6 @@ public class TreeSearchStrategy implements Strategy {
 	 *         the next turn, false otherwise.
 	 */
 	private boolean opponentWinsAfterMove(PlayerMove move, Connect4Game game) {
-		Player thisPlayer = game.getPlayers().get(0).getMover((game.queryMove() - 1) % game.getPlayers().size());
 		Player nextPlayer = game.getPlayers().get(0).getMover((game.queryMove() - 0) % game.getPlayers().size());
 		for (PlayerMove nextMoves : game.getGameBoard().getLegalMoves().values()) {
 			Connect4Board nextBoard = (Connect4Board) game.copy().getGameBoard();

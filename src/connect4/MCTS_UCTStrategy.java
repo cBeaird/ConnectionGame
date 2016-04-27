@@ -40,7 +40,7 @@ public class MCTS_UCTStrategy implements Strategy {
      */
     @Override
     public String getStrategyName() {
-        return MCTS_UCTStrategy.NAME;
+        return String.format("%s(%d)", MCTS_UCTStrategy.NAME, getPlayDuration());
     }
 
     /**

@@ -24,7 +24,7 @@ public class MCTSStrategy implements Strategy {
 
     @Override
     public String getStrategyName() {
-        return name;
+        return String.format("%s(%d)", MCTSStrategy.name, playDuration);
     }
 
     @Override

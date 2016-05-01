@@ -117,7 +117,13 @@ public class MCTS_UCTStrategy implements Strategy {
                 System.out.println("this move is not in the game tree");
             }
         }
-        System.out.println(String.format("%d games played", gameTree.size()));
+
+        if ((bestMove == null) && (hypotheticalGame.getGameBoard().getLegalMoves().size() == 1)) {
+            PlayerMove m = (PlayerMove) hypotheticalGame.getGameBoard().getLegalMoves().values().toArray()[0];
+            m.setOwner(thisPlayer);
+            return m;
+        }
+
         return bestMove;
     }
 

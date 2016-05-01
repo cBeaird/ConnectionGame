@@ -106,6 +106,16 @@ public class MCTSStrategy implements Strategy {
             }
         }
 
+//        TODO Remove this from the final
+        if ((bestMove == null) && (hypotheticalGame.getGameBoard().getLegalMoves().size() == 1)) {
+            PlayerMove m = (PlayerMove) hypotheticalGame.getGameBoard().getLegalMoves().values().toArray()[0];
+            m.setOwner(thisPlayer);
+            return m;
+        }
+
+        if (bestMove == null) {
+            System.out.println("a");
+        }
         return bestMove;
     }
 

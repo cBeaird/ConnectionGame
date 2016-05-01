@@ -90,8 +90,15 @@ public class Connect4Game extends Game {
             GamePieces p = (GamePieces) this.players.get(0).getMover(this.moveNumber() % 2);
             Strategy s = p.getPlayerStrategy();
             PlayerMove m = s.getNextMove(this);
+//            todo remove this from the final
+//            try {
             b.setBoardSpace(m.getYCoordinate(), m.getXCoordinate(), p);
-
+//            }catch (NullPointerException e){
+//                e.printStackTrace(System.out);
+//                System.out.println(m);
+//                System.out.println(p);
+//                System.out.println(b);
+//            }
         }
     }
 }

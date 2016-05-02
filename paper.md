@@ -27,7 +27,7 @@ collection of games known as connection games.
 Connection games are played by players who
 place game pieces in turn with the goal of
 creating a series of connected game pieces of a
-desired length. We know from Nash that for
+desired length. We know from Nash[1] that for
 any two player finite perfect information game
 there exists a pure strategy. The accepted
 method for analyzing dynamic games such as
@@ -121,3 +121,10 @@ section 5 holds our conclusions.
 ## Conclusions
 
 ## References
+
+[1] Nash, John F. "Equilibrium points in n-person games." Proc. Nat. Acad. Sci. USA 36.1 (1950): 48-49.
+
+_Below is the big paper we discovered early int his project, 
+we may choose to cite it so I am leaving it here_
+
+[*] Allis, Victor. "A knowledge-based approach to connect-four. The game is solved: White wins." Master’s thesis, Vrije Universiteit. (1988)

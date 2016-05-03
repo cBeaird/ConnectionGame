@@ -1,0 +1,17 @@
+# Tree search time data in millis. First column is the Strategy anf Board size,
+# and the remaining columns are the average move time with the first and last 
+# move time being the left- and right-most values repectively. A rows don't
+# all have the same number of move times (ie sum runs end in fewer moves than others).
+
+TreeSearchStrategy(4) (5x6), 6.52, 7.58, 5.82, 5.64, 4.22, 1.72, 2.1, 0.4, 0.02, 0.0
+TreeSearchStrategy(2) (7x8), 0.64, 0.62, 0.32, 0.3, 0.3, 0.34, 0.32, 0.0, 0.0
+TreeSearchStrategy(2) (6x7), 0.76, 0.02, 0.66, 0.46, 0.0, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+TreeSearchStrategy(4) (6x7), 13.38, 16.52, 13.56, 11.18, 8.68, 5.78, 4.2, 1.24, 0.32
+TreeSearchStrategy(6) (5x6), 254.06, 243.26, 227.22, 159.68, 121.06, 72.04, 33.26, 4.5
+TreeSearchStrategy(4) (4x5), 4.52, 5.66, 4.04, 2.9, 2.0, 0.84, 2.6, 0.22, 0.02, 0.0
+TreeSearchStrategy(6) (4x5), 70.64, 61.24, 54.18, 24.22, 9.06, 2.92, 0.86, 0.0, 0.0, 0.0
+TreeSearchStrategy(2) (4x5), 0.2, 0.8, 0.8, 0.2, 0.2, 0.2, 0.0, 0.2, 0.0, 0.0
+TreeSearchStrategy(6) (7x8), 2123.34, 2111.1, 1981.84, 1497.02, 907.0, 599.7, 381.74, 277.38, 157.5, 73.1, 66.74, 52.54, 49.72, 37.42, 12.68
+TreeSearchStrategy(6) (6x7), 779.56, 781.54, 720.6, 563.38, 427.66, 286.66, 194.96, 158.2, 110.28, 70.68, 48.26, 21.46, 11.62, 2.48, 1.48, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0
+TreeSearchStrategy(2) (5x6), 0.34, 0.02, 0.04, 0.4, 0.06, 0.02, 0.04, 0.0, 0.0, 0.0
+TreeSearchStrategy(4) (7x8), 30.66, 33.96, 30.34, 25.42, 20.78, 13.64, 9.32, 6.48, 2.48, 2.24, 1.56, 0.62, 0.96

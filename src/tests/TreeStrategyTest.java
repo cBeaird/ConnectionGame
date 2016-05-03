@@ -1,6 +1,5 @@
 package tests;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +7,6 @@ import java.util.List;
 import connect4.Connect4Board;
 import connect4.Connect4Game;
 import connect4.GamePieces;
-import connect4.InteractiveStrategy;
-import connect4.MCTSStrategy;
-import connect4.MCTS_UCTStrategy;
 import connect4.RandomStrategy;
 import connect4.SmarterRandomStrategy;
 import connect4.TreeSearchStrategy;

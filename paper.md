@@ -104,11 +104,32 @@ section 5 holds our conclusions.
 
 ## Strategies
 
-### Random Play
+### Random Play, Antagonistic Random Play, and Brute Force Strategies
 
-### Antagonistic Random Play
-
-### Brute Force
+A player’s strategy for our connect 4 game is responsible for choosing 
+the next move from the set of legal moves that the player should make 
+given the current game state. In addition to the Minimax and Monte Carlo strategies, we have implemented a number of other strategies to use as 
+benchmarks. The first strategy, Random, chooses a move from the legal 
+move set at random every turn. The random strategy does not consider the 
+game board at all, which means that this strategy will make to effort to 
+block an opponent’s progress or win for itself. We think that Random 
+strategy is a good baseline against which to evaluate other players. Our 
+second strategy, called Antagonistic Random, builds on top of Random 
+strategy with the addition of evaluating the board while choosing a 
+move. Antagonistic Random will choose one of the winning moves it the 
+current set of legal moves contains one or more moves that would win the 
+game. If there is no way for Antagonistic Random to win on this turn, it 
+will prevent it’s opponent from completing a winning run if it’s 
+opponent can win on their next turn. If neither Antagonistic Random nor 
+its opponent can win in this round, then it will choose a move at random 
+just like Random would. We liken Antagonistic Random to a typical casual 
+human player of the connect 4 game. The Brute Force strategy is the 
+first of our strategies that inspect the extensive form game tree for an 
+optimal solution. Brute Force inspects the tree down to the game’s end 
+states and assigns the utility of a cumulative utility of the node’s 
+descendants, and ultimately to the end game leaf nodes where winning, 
+losing, and drawing at the game’s end return high, low, and neutral 
+utility for the player. 
 
 ### Minimax
 

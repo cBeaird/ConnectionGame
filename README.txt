@@ -41,5 +41,5 @@ depth of 4:
     `java -cp bin connect4.Main Minimax 4`
 
 To play against the computer that uses the MonteCarloTreeSearch Strategy 
-with a search duration of 2 seconds of 4:
-    `java -cp bin connect4.Main MonteCarloTreeSearch 2000`
+with a search duration of 2, and you go first:
+    `java -cp bin connect4.Main MonteCarloTreeSearch 2000 first`

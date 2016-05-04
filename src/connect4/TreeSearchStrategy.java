@@ -21,6 +21,9 @@ import connectionAPI.Strategy;
 public class TreeSearchStrategy implements Strategy {
 
 	private Integer maxDepth;
+	private long timeStart = 0L;
+	private long timeStop = 0L;
+	private List<Long> getMoveDurations = new ArrayList<>();
 
 	/**
 	 * 
@@ -35,32 +38,38 @@ public class TreeSearchStrategy implements Strategy {
 		this.maxDepth = maxDepth;
 	}
 
+	public long getMoveDurationInMillis() {
+		timeStop = System.currentTimeMillis();
+		return timeStop - timeStart;
+	}
+
 	@Override
 	public String getStrategyName() {
-		return this.getClass().getSimpleName() + "("+maxDepth+")";
+		return this.getClass().getSimpleName() + "(" + maxDepth + ")";
 	}
 
 	@Override
 	public PlayerMove getNextMove(Game game) {
+		long timeStart = System.currentTimeMillis();
 
 		Random rnd = new Random();
 
 		Tree tree = new Tree((Connect4Game) game, maxDepth);
 
-//		for (Tree child : tree.getChildren()) {
-//			System.out.println(child.getMove() + ": " + child.minimax());
-//		}
+		// for (Tree child : tree.getChildren()) {
+		// System.out.println(child.getMove() + ": " + child.minimax());
+		// }
 
 		List<PlayerMove> moves = getWinningMoves(tree);
-//		System.out.println("winners: " + moves);
+		// System.out.println("winners: " + moves);
 		if (!moves.isEmpty()) {
 			return moves.get(rnd.nextInt(moves.size()));
 		}
-		
-		moves = getBestMoves(tree);
-//		System.out.println("besters: " + moves);
-		
 
+		moves = getBestMoves(tree);
+		// System.out.println("besters: " + moves);
+
+		getMoveDurations.add(System.currentTimeMillis() - timeStart);
 		return moves.get(rnd.nextInt(moves.size()));
 
 	}
@@ -79,15 +88,18 @@ public class TreeSearchStrategy implements Strategy {
 			Connect4Board board = (Connect4Board) child.getGame().getGameBoard().copy();
 			board.setBoardSpace(move.getYCoordinate(), move.getXCoordinate(), (GamePieces) tree.rootPlayer());
 			if (!opponentWinsAfterMove(move, game)) {
-//				System.out.println("child.minimax() = "+child.minimax()+" == maxUtl="+maxUtl);
-//				System.out.println(child.minimax() == maxUtl);
+				// System.out.println("child.minimax() = "+child.minimax()+" ==
+				// maxUtl="+maxUtl);
+				// System.out.println(child.minimax() == maxUtl);
 				if (child.minimax() > maxUtl) {
 					list.clear();
-//					System.out.println("Adding " + move + " for a new maxUtil of " + child.minimax());
+					// System.out.println("Adding " + move + " for a new maxUtil
+					// of " + child.minimax());
 					list.add(move);
 					maxUtl = child.minimax();
 				} else if (child.minimax() == maxUtl) {
-//					System.out.println("Adding " + move + " for a maxUtil of " + child.minimax());
+					// System.out.println("Adding " + move + " for a maxUtil of
+					// " + child.minimax());
 					list.add(move);
 				}
 			}
@@ -149,6 +161,12 @@ public class TreeSearchStrategy implements Strategy {
 			}
 		}
 		return list;
+	}
+
+	public List<Long> getGetMoveDurations() {
+		List<Long> copy = new ArrayList<>(getMoveDurations);
+		getMoveDurations = new ArrayList<>();
+		return copy;
 	}
 
 }

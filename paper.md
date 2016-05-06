@@ -102,6 +102,14 @@ hypothesis, and the reasoning behind it. Section 4
 covers the results of our experiments, and finally
 section 5 holds our conclusions.
 
+## Background
+
+The standard commercial version of Connect 4 is a game in which 2 adversarial players attempt to make a continuous run of four of their game pieces on a 7 by 6 cell board. The board itself is vertically oriented so that players may only place their pieces on the lowermost available cells. Game pieces, after being placed, cannot be removed for the rest of the game. The game ends when a player makes has place four of her pieces in a continuous row, column, or diagonal of the board; in this case that player has won. If the board is completely filled and the no player has won, then the game ends in a draw.
+
+![A connect 4 game in progress][connect4_inprogress.png]
+
+_An abstract example of a Connect4 game in play, white and black cells are cells that are already occupied. The cells marked with circles are the current player’s possible moves. Black is the current player, and can win the game by placing a piece in the cell marked by the black circle, thereby completing a continuous vertical column of black pieces in the middle of the board._
+
 ## Strategies
 
 ### Random Play, Antagonistic Random Play, and Brute Force Strategies
@@ -113,13 +121,13 @@ benchmarks.
 
 The first strategy, Random, chooses a move from the legal 
 move set at random every turn. The random strategy does not consider the 
-game board at all, which means that this strategy will make to effort to 
-block an opponent’s progress or win for itself. We think that Random 
-strategy is a good baseline against which to evaluate other players.
+game board at all, which means that this strategy will make to effort no 
+block an opponent’s progress or win for itself. We think that the Random 
+strategy is a good baseline against which to evaluate other strategies.
 
 Our second strategy, called Antagonistic Random, builds on top of Random 
 strategy with the addition of evaluating the board while choosing a 
-move. Antagonistic Random will choose one of the winning moves it the 
+move. Antagonistic Random will choose one of the winning moves if the 
 current set of legal moves contains one or more moves that would win the 
 game. If there is no way for Antagonistic Random to win on this turn, it 
 will prevent it’s opponent from completing a winning run if it’s 
@@ -131,6 +139,15 @@ human player of the connect 4 game.
 The Brute Force strategy is the first of our strategies that inspect the extensive form game tree for an optimal solution. Brute Force inspects the tree down to the game’s end states and assigns the utility of a cumulative utility of the node’s descendants, and ultimately to the end game leaf nodes where winning, losing, and drawing at the game’s end return high, low, and neutral utility for the player. 
 
 ### Minimax
+
+In a minimax playing strategy, a player will attempt to maximize her utility under the assumption that her opponents will attempt to minimize it. For each of our turns, we will attempt to make a move that maximizes our utility. We assume that our opponent will choose a move that will minimize our utility. We implement the minimax algorithm by recursively depth-first-traversing a tree of node that represent game states. For any node, n, the current player of that node will be either our player or the opponent. A descendant of n will represent the update game state from the game state in n if the player at node n had made a move, m, out of the set of legal moves available at node n. In other words, node n will have a descendant node for each possible move at node n, and each descendant will represent the game state is if the player had made that move.
+
+![An example of a game tree][gametree.png]
+
+_Above is an example of a minimax tree where each game state yields two possible moves. There are 4 plies below the root node. The plies alternate between our (circle) player and our opponent’s (square) player. The triangles represent final game states, where no more moves can be made. Triangle will be either a win, lose, or draw for our player._
+
+
+*more to come*
 
 ### Monte Carlo Tree Search
 

@@ -132,7 +132,7 @@ public class Main {
 	}
 	
 	private void printUsage(){
-		System.out.println("USAGE: java connect4.Main <Strategy> <Parameter> [first]");
+		System.out.println("USAGE: connect4.Main <Strategy> <Parameter> [first]");
 		System.out.println("  where <Strategy> is the Strategy the computer will use");
 		System.out.println("  and <Parameter> is a parameter for the Strategy");
 		System.out.println("  and omitting [first] will make you the second player");

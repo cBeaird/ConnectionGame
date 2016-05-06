@@ -20,7 +20,7 @@ import connectionAPI.Strategy;
 
 public class TreeSearchStrategy implements Strategy {
 
-	private Integer maxDepth;
+	private int maxDepth;
 	private long timeStart = 0L;
 	private long timeStop = 0L;
 	private List<Long> getMoveDurations = new ArrayList<>();
@@ -34,7 +34,7 @@ public class TreeSearchStrategy implements Strategy {
 	 *            to play out. Set this to Integer.MAX-VALUE for a full tree
 	 *            search.
 	 */
-	public TreeSearchStrategy(Integer maxDepth) {
+	public TreeSearchStrategy(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
 

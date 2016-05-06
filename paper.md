@@ -54,7 +54,7 @@ popularized by the Milton Bradly company in
 XXXX. The origin of the game is not truly know
 but many have claimed to have invented it.
 Connect four has many names Captains Mistress,
-â€¦., to name just a few. The game was
+Ã¢â‚¬Â¦., to name just a few. The game was
 independently solved by two people. The first
 XXX who solved the game in xxx. The second
 solved the game in xxx. Xxx solved the game
@@ -106,15 +106,15 @@ section 5 holds our conclusions.
 
 The standard commercial version of Connect 4 is a game in which 2 adversarial players attempt to make a continuous run of four of their game pieces on a 7 by 6 cell board. The board itself is vertically oriented so that players may only place their pieces on the lowermost available cells. Game pieces, after being placed, cannot be removed for the rest of the game. The game ends when a player makes has place four of her pieces in a continuous row, column, or diagonal of the board; in this case that player has won. If the board is completely filled and the no player has won, then the game ends in a draw.
 
-![A connect 4 game in progress][connect4_inprogress.png]
+![A connect 4 game in progress](https://github.com/cBeaird/ConnectionGame/blob/master/connect4_inprogress.png)
 
-_An abstract example of a Connect4 game in play, white and black cells are cells that are already occupied. The cells marked with circles are the current player’s possible moves. Black is the current player, and can win the game by placing a piece in the cell marked by the black circle, thereby completing a continuous vertical column of black pieces in the middle of the board._
+_An abstract example of a Connect4 game in play, white and black cells are cells that are already occupied. The cells marked with circles are the current playerâ€™s possible moves. Black is the current player, and can win the game by placing a piece in the cell marked by the black circle, thereby completing a continuous vertical column of black pieces in the middle of the board._
 
 ## Strategies
 
 ### Random Play, Antagonistic Random Play, and Brute Force Strategies
 
-A player’s strategy for our connect 4 game is responsible for choosing 
+A playerâ€™s strategy for our connect 4 game is responsible for choosing 
 the next move from the set of legal moves that the player should make 
 given the current game state. In addition to the Minimax and Monte Carlo strategies, we have implemented a number of other strategies to use as 
 benchmarks.
@@ -122,7 +122,7 @@ benchmarks.
 The first strategy, Random, chooses a move from the legal 
 move set at random every turn. The random strategy does not consider the 
 game board at all, which means that this strategy will make to effort no 
-block an opponent’s progress or win for itself. We think that the Random 
+block an opponentâ€™s progress or win for itself. We think that the Random 
 strategy is a good baseline against which to evaluate other strategies.
 
 Our second strategy, called Antagonistic Random, builds on top of Random 
@@ -130,21 +130,21 @@ strategy with the addition of evaluating the board while choosing a
 move. Antagonistic Random will choose one of the winning moves if the 
 current set of legal moves contains one or more moves that would win the 
 game. If there is no way for Antagonistic Random to win on this turn, it 
-will prevent it’s opponent from completing a winning run if it’s 
+will prevent itâ€™s opponent from completing a winning run if itâ€™s 
 opponent can win on their next turn. If neither Antagonistic Random nor 
 its opponent can win in this round, then it will choose a move at random 
 just like Random would. We liken Antagonistic Random to a typical casual 
 human player of the connect 4 game.
 
-The Brute Force strategy is the first of our strategies that inspect the extensive form game tree for an optimal solution. Brute Force inspects the tree down to the game’s end states and assigns the utility of a cumulative utility of the node’s descendants, and ultimately to the end game leaf nodes where winning, losing, and drawing at the game’s end return high, low, and neutral utility for the player. 
+The Brute Force strategy is the first of our strategies that inspect the extensive form game tree for an optimal solution. Brute Force inspects the tree down to the gameâ€™s end states and assigns the utility of a cumulative utility of the nodeâ€™s descendants, and ultimately to the end game leaf nodes where winning, losing, and drawing at the gameâ€™s end return high, low, and neutral utility for the player. 
 
 ### Minimax
 
 In a minimax playing strategy, a player will attempt to maximize her utility under the assumption that her opponents will attempt to minimize it. For each of our turns, we will attempt to make a move that maximizes our utility. We assume that our opponent will choose a move that will minimize our utility. We implement the minimax algorithm by recursively depth-first-traversing a tree of node that represent game states. For any node, n, the current player of that node will be either our player or the opponent. A descendant of n will represent the update game state from the game state in n if the player at node n had made a move, m, out of the set of legal moves available at node n. In other words, node n will have a descendant node for each possible move at node n, and each descendant will represent the game state is if the player had made that move.
 
-![An example of a game tree][gametree.png]
+![An example of a game tree](https://github.com/cBeaird/ConnectionGame/blob/master/gametree.png)
 
-_Above is an example of a minimax tree where each game state yields two possible moves. There are 4 plies below the root node. The plies alternate between our (circle) player and our opponent’s (square) player. The triangles represent final game states, where no more moves can be made. Triangle will be either a win, lose, or draw for our player._
+_Above is an example of a minimax tree where each game state yields two possible moves. There are 4 plies below the root node. The plies alternate between our (circle) player and our opponentâ€™s (square) player. The triangles represent final game states, where no more moves can be made. Triangle will be either a win, lose, or draw for our player._
 
 
 *more to come*
@@ -164,4 +164,4 @@ _Above is an example of a minimax tree where each game state yields two possible
 _Below is the big paper we discovered early int his project, 
 we may choose to cite it so I am leaving it here_
 
-[*] Allis, Victor. "A knowledge-based approach to connect-four. The game is solved: White wins." Masterâ€™s thesis, Vrije Universiteit. (1988)
+[*] Allis, Victor. "A knowledge-based approach to connect-four. The game is solved: White wins." MasterÃ¢â‚¬â„¢s thesis, Vrije Universiteit. (1988)

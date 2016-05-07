@@ -146,8 +146,9 @@ In a minimax playing strategy, a player will attempt to maximize her utility und
 
 _Above is an example of a minimax tree where each game state yields two possible moves. There are 4 plies below the root node. The plies alternate between our (circle) player and our opponent’s (square) player. The triangles represent final game states, where no more moves can be made. Triangle will be either a win, lose, or draw for our player._
 
+In theory the entire tree could be searched and the leaf nodes would be the ending game states. We could then assign a utility for these end states and perfectly devaluate the utility of a move in any point of the game. As noted above though, the size of the search space for a standard connect 4 game is of the order of 10^12 makes such an approach infeasible. Instead we search only to a specific depth and evaluate the value of the node with a heuristic.
 
-*more to come*
+When the tree search reaches the maximum depth it can search, it first checks to see if the game is over, if the game is over, then the utility of that node is a function of the outcome of the game, with win utilities being greater than draws which are greater than loses. If the game is not yet over, then our heuristic evaluates the board to determine the utility. Our heuristic function at this point counts runs on the board for each player. A run is defined to be a consecutive line of pieces of the same color greater than one. The reasoning behind this heuristic is that if a player has many runs, then that player has many ways to win the game. Utility of the node is calculated by subtracted number of runs the opponent player has from the number of runs our player has.
 
 ### Monte Carlo Tree Search
 
@@ -155,7 +156,17 @@ _Above is an example of a minimax tree where each game state yields two possible
 
 ## Results
 
+Our two random strategies fared unsurprisingly the poorest against the more sophisticated strategies. When these two strategies lost, they lost quickly (after about 12 moves), and their wins game only after a game of many moves. The many moves required for the random strategies to win is consistent with our expectations since it would take many serendipitous moves to keep these strategies in the game until they had enough partial connections to have a reasonable change to randomly complete a partial connection.
+
+With small boards, strategies were more likely to force a draw, and we believe this is for 2 reasons. First, since the winning connection length is fixed, larger boards offer more winning board configurations than smaller boards and so must necessarily end in draws. Second, the game tree searching strategies can see closer to the end of the game with smaller boards, allowing them to turn a potential loss into a draw instead.
+
+Minimax Tree Search was not able to win more games than it lost against the entire field and in general performed more poorly as the game board increased in size. The decrease in performance can be explained by the increase in the solution space of the game, but perhaps a better heuristic would improve the performance. Notice also that the minimax strategy could not be exercised for the two largest boards at a depth of 6, the increase in branching factor caused this strategy to be intractable at larger board sizes.
+
+Monte Carlo Tree Search has best win rate of all the strategies and usually tends to win more games than it loses. As the search space (the board sizes) increases, Monte Carlo Tree Search degrades but not a sharply as the Minimax strategy. Another notable result is that the Monte Carlo Tree Search strategy wins games in the fewest number of moves compared to the others. This may be considered evidence that this strategy is more making the best moves more consistently than other strategies.
+
 ## Conclusions
+
+In this paper we explored the problem of the connection game Connect 4 and implemented a selection of computer algorithms to use as strategies for playing the game. We created a baseline random strategies and implemented the Minimax Tree Search and the Monte Carlo Tree Search algorithms. We exercised all of these strategies against the other strategies and found that Monte Carlo Tree Search was most successful at winning and degraded in quality lease as the boards sizes increased. For future work, we might try experimenting with different heuristics for the Minimax Tree Search; and also experiment with different winning connection lengths.
 
 ## References
 

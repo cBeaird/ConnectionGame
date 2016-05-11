@@ -1,8 +1,7 @@
 
 # Compilation Instructions
 From the directory that contains this file, execute the command:
-
-    `javac -d bin -cp bin /src/connect4/Main.java`
+    `javac -d bin src/connect4/*java src/connectionAPI/*.java`
 
 This will have compiled all classes and put them in /bin.
 
